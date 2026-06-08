@@ -12,10 +12,10 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --gold: #C9A84C;
-      --gold-light: #F0D080;
-      --gp: #1a5e2a;
-      --gl: #2e8b47;
+      --gold: #ff7c20;
+      --gold-light: #ffa040;
+      --gp: #0a3d6b;
+      --gl: #1565c0;
       --bg: #faf7f0;
       --white: #ffffff;
       --text: #1a1a1a;
@@ -227,7 +227,7 @@
     .summary-counter { font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
     .summary-counter span { font-weight: 500; color: var(--gp); }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background: #e6f7eb; border: 1px solid #a8d8b0; border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--gp); }
+    .chip { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--gp); }
     .cost-box { text-align: right; min-width: 105px; }
     .cost-label { font-size: 11px; color: var(--text-muted); }
     .cost-amt { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--gp); }
@@ -243,14 +243,14 @@
     /* TIERS */
     .tier-section { margin-bottom: 8px; }
     .tier-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border-radius: 10px 10px 0 0; }
-    .tier-header.t8  { background: #1a5e2a; color: #fff; }
-    .tier-header.t6  { background: #2e8b47; color: #fff; }
-    .tier-header.t5  { background: #3a9e58; color: #fff; }
-    .tier-header.t4  { background: #52b86f; color: #fff; }
-    .tier-header.t3  { background: #78c98a; color: #1a1a1a; }
-    .tier-header.t2  { background: #a8ddb5; color: #1a5e2a; }
-    .tier-header.t1  { background: #c8eccc; color: #1a5e2a; }
-    .tier-header.t05 { background: #e6f7e8; color: #1a5e2a; border: 1px solid #b8e0bb; }
+    .tier-header.t8  { background: #0a3d6b; color: #fff; }
+    .tier-header.t6  { background: #1565c0; color: #fff; }
+    .tier-header.t5  { background: #1976d2; color: #fff; }
+    .tier-header.t4  { background: #2196f3; color: #fff; }
+    .tier-header.t3  { background: #64b5f6; color: #1a1a1a; }
+    .tier-header.t2  { background: #90caf9; color: #0a3d6b; }
+    .tier-header.t1  { background: #bbdefb; color: #0a3d6b; }
+    .tier-header.t05 { background: #e3f2fd; color: #0a3d6b; border: 1px solid #90caf9; }
     .tier-label { font-weight: 500; font-size: 14px; }
     .tier-count { font-size: 12px; opacity: 0.75; }
     .tier-body {
@@ -277,8 +277,8 @@
       display: flex; flex-direction: column; align-items: center; gap: 4px;
       color: var(--text);
     }
-    .team-btn:hover:not(:disabled) { border-color: var(--gl); background: #f0faf3; }
-    .team-btn.selected { border-color: var(--gp); background: #e6f7eb; color: var(--gp); }
+    .team-btn:hover:not(:disabled) { border-color: var(--gl); background: #e3f2fd; }
+    .team-btn.selected { border-color: var(--gp); background: #e3f2fd; color: var(--gp); }
     .team-btn.would-exceed { opacity: 0.35; cursor: not-allowed; }
     .team-btn:disabled:not(.would-exceed) { opacity: 0.35; cursor: default; }
     .team-flag { font-size: 1.5rem; }
@@ -319,7 +319,7 @@
     .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--gp); }
     .modal-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
     .modal-teams { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
-    .modal-chip { background: #e6f7eb; border: 1px solid #a8d8b0; border-radius: 20px; padding: 5px 13px; font-size: 13px; color: var(--gp); }
+    .modal-chip { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 20px; padding: 5px 13px; font-size: 13px; color: var(--gp); }
     .modal-cost { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; padding: 12px; background: var(--surface); border-radius: 9px; line-height: 1.75; }
     .modal-cost strong { color: var(--text); }
     .modal-btns { display: flex; gap: 10px; }
@@ -359,7 +359,7 @@
 
     .lb-legend { display: flex; gap: 14px; margin-bottom: 12px; font-size: 12px; color: var(--text-muted); align-items: center; flex-wrap: wrap; }
     .paid-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
-    .paid-badge.yes { background: #e6f7eb; color: #1a5e2a; border: 1px solid #a8d8b0; }
+    .paid-badge.yes { background: #e3f2fd; color: #0a3d6b; border: 1px solid #90caf9; }
     .paid-badge.no  { background: #fff8e1; color: #856404; border: 1px solid #f0d060; }
 
     .lb-header {
@@ -384,12 +384,12 @@
       align-items: center;
       transition: border-color 0.15s;
     }
-    .lb-row.top1 { border-color: #C9A84C; background: #fffdf5; }
+    .lb-row.top1 { border-color: #ff7c20; background: #fffdf5; }
     .lb-row.top2 { border-color: #b0b0b0; }
     .lb-row.top3 { border-color: #b08050; background: #fdf8f2; }
     .lb-row.unpaid { opacity: 0.72; }
     .rank { font-weight: 700; font-size: 16px; text-align: center; color: var(--text-muted); }
-    .rank.r1 { color: #C9A84C; }
+    .rank.r1 { color: #ff7c20; }
     .rank.r2 { color: #888; }
     .rank.r3 { color: #a06030; }
     .player-name { font-weight: 500; font-size: 14px; }
@@ -400,7 +400,7 @@
     .status-bar { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 10px 14px; border-radius: 9px; margin-bottom: 1rem; flex-wrap: wrap; }
     .status-bar.loading { background: var(--surface); color: var(--text-muted); }
     .status-bar.error   { background: #fff3cd; color: #856404; }
-    .status-bar.ok      { background: #e6f7eb; color: #1a5e2a; }
+    .status-bar.ok      { background: #e3f2fd; color: #0a3d6b; }
     .spin { display: inline-block; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -425,9 +425,9 @@
 
 
 <!-- FLAG TICKER -->
-<div style="background:#155224;padding:12px 0;overflow:hidden;position:relative;width:100%;">
-  <div style="position:absolute;top:0;bottom:0;left:0;width:48px;background:linear-gradient(to right,#155224,transparent);z-index:2;pointer-events:none;"></div>
-  <div style="position:absolute;top:0;bottom:0;right:0;width:48px;background:linear-gradient(to left,#155224,transparent);z-index:2;pointer-events:none;"></div>
+<div style="background:#093560;padding:12px 0;overflow:hidden;position:relative;width:100%;">
+  <div style="position:absolute;top:0;bottom:0;left:0;width:48px;background:linear-gradient(to right,#093560,transparent);z-index:2;pointer-events:none;"></div>
+  <div style="position:absolute;top:0;bottom:0;right:0;width:48px;background:linear-gradient(to left,#093560,transparent);z-index:2;pointer-events:none;"></div>
   <div id="flagTrack" style="display:flex;gap:22px;width:max-content;animation:flagScroll 35s linear infinite;">
   </div>
 </div>
@@ -477,22 +477,22 @@
   <div style="max-width:780px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;align-items:center;">
     <div style="text-align:center;">
       <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Deadline</div>
-      <div id="countdown" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#1a5e2a;line-height:1.2;">—</div>
+      <div id="countdown" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#0a3d6b;line-height:1.2;">—</div>
       <div style="font-size:10px;color:#888;margin-top:2px;">Jun 11 · 1:00pm CST</div>
     </div>
     <div style="text-align:center;border-left:1px solid rgba(0,0,0,0.08);border-right:1px solid rgba(0,0,0,0.08);padding:0 8px;">
       <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Entries</div>
-      <div id="statEntries" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#1a5e2a;">—</div>
+      <div id="statEntries" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0a3d6b;">—</div>
       <div style="font-size:10px;color:#888;margin-top:2px;" id="statPaid">— confirmed paid</div>
     </div>
     <div style="text-align:center;border-right:1px solid rgba(0,0,0,0.08);padding:0 8px;">
       <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Total pot</div>
-      <div id="statTotal" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#1a5e2a;">—</div>
+      <div id="statTotal" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0a3d6b;">—</div>
       <div style="font-size:10px;color:#888;margin-top:2px;">100% to prize pot</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Prize pool</div>
-      <div id="statPrize" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#C9A84C;">—</div>
+      <div id="statPrize" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#ff7c20;">—</div>
       <div style="font-size:10px;color:#888;margin-top:2px;line-height:1.4;">60% / 30% / 10% split</div>
     </div>
   </div>
@@ -541,7 +541,7 @@
   <h2 class="section-title">Pick your 5 teams</h2>
 
   <div class="reg-section">
-    <div class="reg-title"><i class="ti ti-user" style="font-size:16px;color:#1a5e2a;"></i> Your details</div>
+    <div class="reg-title"><i class="ti ti-user" style="font-size:16px;color:#0a3d6b;"></i> Your details</div>
     <div class="multi-note">
       <i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px;margin-right:4px;"></i>
       <strong>Want to enter multiple times?</strong> You're welcome to submit more than one entry — each is a separate $10 fee. If entering more than once, a unique team name is required for each submission so we can identify your entries on the leaderboard.
@@ -576,7 +576,7 @@
       </div>
       <div class="cost-box">
         <div class="cost-label">Points used</div>
-        <div class="cost-amt" id="totalCost">$0.00</div>
+        <div class="cost-amt" id="totalCost">0 pts</div>
         <div class="cost-sub" id="budgetRemain">100pts remaining</div>
       </div>
     </div>
@@ -634,18 +634,17 @@
 </div>
 
 <script>
-  const API = "https://script.google.com/macros/s/AKfycbyaVpy82Zkaxleykh4f4H-vfFpxb-03Pe4aS3rP2idQDlVOtff9cAP7JA5gbGSM4DJ-/exec";
+  const API = "https://script.google.com/macros/s/AKfycbzXL8m0GzPp3GV9z6oLq3Hco2JN7zDPBdO18Tuf97Q0d3FMpr0y6JN6YYqo3YUfD94q/exec";
   const CAP = 100;
 
   const TIERS = [
-    {cost:80, label:'80pt tier', cls:'t8', teams:[{name:'Argentina',flag:'🇦🇷'},{name:'Brazil',flag:'🇧🇷'},{name:'England',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'France',flag:'🇫🇷'},{name:'Spain',flag:'🇪🇸'}]},
-    {cost:60, label:'60pt tier', cls:'t6', teams:[{name:'Germany',flag:'🇩🇪'},{name:'Portugal',flag:'🇵🇹'}]},
-    {cost:50, label:'50pt tier', cls:'t5', teams:[{name:'Netherlands',flag:'🇳🇱'}]},
-    {cost:40, label:'40pt tier', cls:'t4', teams:[{name:'Belgium',flag:'🇧🇪'},{name:'Colombia',flag:'🇨🇴'},{name:'Norway',flag:'🇳🇴'}]},
-    {cost:30, label:'30pt tier', cls:'t3', teams:[{name:'Japan',flag:'🇯🇵'},{name:'Mexico',flag:'🇲🇽'},{name:'Morocco',flag:'🇲🇦'},{name:'Switzerland',flag:'🇨🇭'},{name:'Uruguay',flag:'🇺🇾'},{name:'USA',flag:'🇺🇸'}]},
-    {cost:20, label:'20pt tier', cls:'t2', teams:[{name:'Austria',flag:'🇦🇹'},{name:'Canada',flag:'🇨🇦'},{name:'Croatia',flag:'🇭🇷'},{name:'Ecuador',flag:'🇪🇨'},{name:'Paraguay',flag:'🇵🇾'},{name:'Senegal',flag:'🇸🇳'},{name:'Sweden',flag:'🇸🇪'},{name:'Turkey',flag:'🇹🇷'}]},
-    {cost:10, label:'10pt tier', cls:'t1', teams:[{name:'Algeria',flag:'🇩🇿'},{name:'Australia',flag:'🇦🇺'},{name:'Bosnia',flag:'🇧🇦'},{name:'Czech Republic',flag:'🇨🇿'},{name:'Egypt',flag:'🇪🇬'},{name:'Ghana',flag:'🇬🇭'},{name:'Iran',flag:'🇮🇷'},{name:'Ivory Coast',flag:'🇨🇮'},{name:'Scotland',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},{name:'South Korea',flag:'🇰🇷'},{name:'Tunisia',flag:'🇹🇳'}]},
-    {cost:5, label:'5pt tier', cls:'t05', teams:[{name:'Cape Verde',flag:'🇨🇻'},{name:'Curaçao',flag:'🇨🇼'},{name:'DR Congo',flag:'🇨🇩'},{name:'Haiti',flag:'🇭🇹'},{name:'Iraq',flag:'🇮🇶'},{name:'Jordan',flag:'🇯🇴'},{name:'New Zealand',flag:'🇳🇿'},{name:'Panama',flag:'🇵🇦'},{name:'Qatar',flag:'🇶🇦'},{name:'Saudi Arabia',flag:'🇸🇦'},{name:'South Africa',flag:'🇿🇦'},{name:'Uzbekistan',flag:'🇺🇿'}]},
+    {cost:40, label:'40pt tier', cls:'t8', teams:[{name:'Argentina',flag:'🇦🇷'},{name:'Brazil',flag:'🇧🇷'},{name:'England',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'France',flag:'🇫🇷'},{name:'Spain',flag:'🇪🇸'}]},
+    {cost:30, label:'30pt tier', cls:'t6', teams:[{name:'Germany',flag:'🇩🇪'},{name:'Portugal',flag:'🇵🇹'}]},
+    {cost:20, label:'20pt tier', cls:'t4', teams:[{name:'Netherlands',flag:'🇳🇱'},{name:'Belgium',flag:'🇧🇪'},{name:'Colombia',flag:'🇨🇴'},{name:'Norway',flag:'🇳🇴'}]},
+    {cost:15, label:'15pt tier', cls:'t3', teams:[{name:'Japan',flag:'🇯🇵'},{name:'Mexico',flag:'🇲🇽'},{name:'Morocco',flag:'🇲🇦'},{name:'Switzerland',flag:'🇨🇭'},{name:'Uruguay',flag:'🇺🇾'},{name:'USA',flag:'🇺🇸'}]},
+    {cost:10, label:'10pt tier', cls:'t2', teams:[{name:'Austria',flag:'🇦🇹'},{name:'Canada',flag:'🇨🇦'},{name:'Croatia',flag:'🇭🇷'},{name:'Ecuador',flag:'🇪🇨'},{name:'Paraguay',flag:'🇵🇾'},{name:'Senegal',flag:'🇸🇳'},{name:'Sweden',flag:'🇸🇪'},{name:'Turkey',flag:'🇹🇷'}]},
+    {cost:5, label:'5pt tier', cls:'t1', teams:[{name:'Algeria',flag:'🇩🇿'},{name:'Australia',flag:'🇦🇺'},{name:'Bosnia',flag:'🇧🇦'},{name:'Czech Republic',flag:'🇨🇿'},{name:'Egypt',flag:'🇪🇬'},{name:'Ghana',flag:'🇬🇭'},{name:'Iran',flag:'🇮🇷'},{name:'Ivory Coast',flag:'🇨🇮'},{name:'Scotland',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},{name:'South Korea',flag:'🇰🇷'},{name:'Tunisia',flag:'🇹🇳'}]},
+    {cost:2, label:'2pt tier', cls:'t05', teams:[{name:'Cape Verde',flag:'🇨🇻'},{name:'Curaçao',flag:'🇨🇼'},{name:'DR Congo',flag:'🇨🇩'},{name:'Haiti',flag:'🇭🇹'},{name:'Iraq',flag:'🇮🇶'},{name:'Jordan',flag:'🇯🇴'},{name:'New Zealand',flag:'🇳🇿'},{name:'Panama',flag:'🇵🇦'},{name:'Qatar',flag:'🇶🇦'},{name:'Saudi Arabia',flag:'🇸🇦'},{name:'South Africa',flag:'🇿🇦'},{name:'Uzbekistan',flag:'🇺🇿'}]},
   ];
 
   let selected = new Map();
@@ -743,7 +742,7 @@
     document.getElementById('modalCost').innerHTML =
       `Playing as: <strong>${fn} ${ln}${tn?' · '+tn:''}</strong><br>`+
       `Points used: <strong>$${total.toFixed(2)}</strong> — 100% goes to the prize pot 🏆<br>`+
-      `<span style="font-size:12px;color:#666;">Want another entry? Submit this one first, then come back and fill out the form again.</span><br><br><span style="font-size:13px;font-weight:500;color:#1a5e2a;">How to pay:</span><br><span style="font-size:12px;color:#666;line-height:1.8;">Pay $10 to enter — payment details will be shared separately.</span>`;
+      `<span style="font-size:12px;color:#666;">Want another entry? Submit this one first, then come back and fill out the form again.</span><br><br><span style="font-size:13px;font-weight:500;color:#0a3d6b;">How to pay:</span><br><span style="font-size:12px;color:#666;line-height:1.8;">Pay $10 to enter — payment details will be shared separately.</span>`;
     document.getElementById('submitStatus').textContent = '';
     document.getElementById('confirmBtn').disabled = false;
     document.getElementById('modal').classList.add('open');
