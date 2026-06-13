@@ -1,916 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CCABA World Cup Pool</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+const SHEET_NAME = "submissions";
 
-    :root {
-      --gold: #ff7c20;
-      --gold-light: #ffa040;
-      --gp: #0a3d6b;
-      --gl: #1565c0;
-      --bg: #faf7f0;
-      --white: #ffffff;
-      --text: #1a1a1a;
-      --text-muted: #666;
-      --border: rgba(0,0,0,0.12);
-      --border-mid: rgba(0,0,0,0.22);
-      --surface: #f4f1ea;
-    }
+const POINTS = {
+  "group":    3,
+  "draw":     1,
+  "round32":  5,
+  "round16":  8,
+  "quarter":  13,
+  "semi":     20,
+  "champion": 35
+};
 
-    html { scroll-behavior: smooth; }
+function doGet(e) {
+  const action = e.parameter.action;
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* HERO */
-    .hero {
-      background: var(--gp);
-      padding: 3.5rem 2rem 3rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 40px, transparent 40px, transparent 80px);
-    }
-    .hero-badge {
-      display: inline-block;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 6px 20px;
-      border-radius: 20px;
-      margin-bottom: 1.2rem;
-      position: relative;
-      font-weight: 500;
-    }
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.5rem, 4vw, 2.4rem);
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.1;
-      margin-bottom: 0.6rem;
-      position: relative;
-    }
-    .hero h1 span { color: var(--gold-light); }
-    .hero-sub {
-      color: rgba(255,255,255,0.65);
-      font-size: 16px;
-      margin-bottom: 2rem;
-      font-style: italic;
-      position: relative;
-    }
-    .split-pill {
-      display: inline-flex;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 40px;
-      overflow: hidden;
-      font-size: 14px;
-      position: relative;
-    }
-    .split-pill div { padding: 9px 22px; display: flex; align-items: center; gap: 7px; }
-    .split-pill .wedding { background: var(--gold); color: #1a1a1a; font-weight: 500; }
-    .split-pill .prize { background: rgba(255,255,255,0.1); color: #fff; }
-
-    /* NAV */
-    nav {
-      display: flex;
-      justify-content: center;
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      padding: 0 1rem;
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .nav-btn {
-      padding: 16px 22px;
-      border: none; background: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .nav-btn:hover { color: var(--gp); }
-    .nav-btn.active { color: var(--gp); border-bottom-color: var(--gold); }
-
-    /* SECTIONS */
-    .section { display: none; padding: 2.5rem 1.5rem; max-width: 780px; margin: 0 auto; }
-    .section.active { display: block; }
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.9rem; font-weight: 700;
-      margin-bottom: 1.5rem;
-      color: var(--gp);
-    }
-
-    /* RULES */
-    .money-box {
-      background: var(--gp);
-      border-radius: 14px;
-      padding: 1.6rem;
-      color: #fff;
-      margin-bottom: 1.5rem;
-    }
-    .money-box h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      margin-bottom: 1rem;
-      color: var(--gold-light);
-    }
-    .money-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .money-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1.1rem; text-align: center; }
-    .money-pct { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--gold-light); }
-    .money-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 5px; }
-
-    .rule-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.2rem 1.4rem;
-      margin-bottom: 1rem;
-      display: flex; gap: 1rem; align-items: flex-start;
-    }
-    .rule-num {
-      min-width: 34px; height: 34px;
-      background: var(--gp); color: #fff;
-      font-weight: 500; font-size: 14px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
-    }
-    .rule-title { font-weight: 500; margin-bottom: 5px; font-size: 15px; }
-    .rule-text { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
-
-    .points-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 1rem; }
-    .points-item {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.9rem; text-align: center;
-    }
-    .points-num { font-size: 1.5rem; font-weight: 700; color: var(--gp); }
-    .points-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
-    /* PICK TEAMS - FORM */
-    .reg-section {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.4rem;
-      margin-bottom: 1.5rem;
-    }
-    .reg-title { font-weight: 500; font-size: 15px; margin-bottom: 0.4rem; color: var(--gp); display: flex; align-items: center; gap: 8px; }
-    .multi-note {
-      background: #fffbea;
-      border: 1px solid #f0d060;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px; color: #7a5c00;
-      margin-bottom: 1rem; line-height: 1.55;
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-    .admin-tag {
-      font-size: 10px; background: #fff3cd; color: #856404;
-      border-radius: 4px; padding: 1px 6px; margin-left: 6px; font-weight: 400;
-    }
-    input[type=text], input[type=email] {
-      width: 100%;
-      padding: 10px 13px;
-      border: 1px solid var(--border-mid);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      background: var(--white);
-      color: var(--text);
-      transition: border-color 0.2s;
-    }
-    input[type=text]:focus, input[type=email]:focus {
-      outline: none; border-color: var(--gp);
-    }
-
-    /* BUDGET BAR */
-    .budget-bar-wrap {
-    position: sticky;
-    top: 53px;
-    z-index: 50;
-      background: var(--white);
-      border: 1px solid var(--border-mid);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 1.2rem;
-    }
-    .budget-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-    .summary-counter { font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
-    .summary-counter span { font-weight: 500; color: var(--gp); }
-    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--gp); }
-    .cost-box { text-align: right; min-width: 105px; }
-    .cost-label { font-size: 11px; color: var(--text-muted); }
-    .cost-amt { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--gp); }
-    .cost-amt.over { color: #c0392b; }
-    .cost-sub { font-size: 11px; color: var(--text-muted); }
-    .bar-track { height: 9px; background: var(--surface); border-radius: 5px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--gp); border-radius: 5px; transition: width 0.3s, background 0.2s; }
-    .bar-fill.over { background: #c0392b; }
-    .bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; }
-    .over-msg { font-size: 12px; color: #a32d2d; margin-top: 7px; display: none; }
-    .over-msg.show { display: block; }
-
-    /* TIERS */
-    .tier-section { margin-bottom: 8px; }
-    .tier-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border-radius: 10px 10px 0 0; }
-    .tier-header.t8  { background: #0a3d6b; color: #fff; }
-    .tier-header.t6  { background: #1565c0; color: #fff; }
-    .tier-header.t5  { background: #1976d2; color: #fff; }
-    .tier-header.t4  { background: #2196f3; color: #fff; }
-    .tier-header.t3  { background: #64b5f6; color: #1a1a1a; }
-    .tier-header.t2  { background: #90caf9; color: #0a3d6b; }
-    .tier-header.t1  { background: #bbdefb; color: #0a3d6b; }
-    .tier-header.t05 { background: #e3f2fd; color: #0a3d6b; border: 1px solid #90caf9; }
-    .tier-label { font-weight: 500; font-size: 14px; }
-    .tier-count { font-size: 12px; opacity: 0.75; }
-    .tier-body {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 10px 10px;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-    .team-btn {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      padding: 10px 8px;
-      cursor: pointer;
-      text-align: center;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px; font-weight: 500;
-      transition: all 0.15s;
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      color: var(--text);
-    }
-    .team-btn:hover:not(:disabled) { border-color: var(--gl); background: #e3f2fd; }
-    .team-btn.selected { border-color: var(--gp); background: #e3f2fd; color: var(--gp); }
-    .team-btn.would-exceed { opacity: 0.35; cursor: not-allowed; }
-    .team-btn:disabled:not(.would-exceed) { opacity: 0.35; cursor: default; }
-    .team-flag { font-size: 1.5rem; }
-    .team-cost { font-size: 10px; color: var(--text-muted); }
-    .team-btn.selected .team-cost { color: var(--gp); }
-
-    /* SUBMIT */
-    .submit-btn {
-      width: 100%; padding: 15px;
-      background: var(--gp); color: #fff;
-      border: none; border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px; font-weight: 500;
-      cursor: pointer; transition: background 0.2s;
-      margin-top: 0.75rem;
-    }
-    .submit-btn:hover { background: var(--gl); }
-    .submit-btn:disabled { background: #aaa; cursor: default; }
-
-    /* MODAL */
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      align-items: center; justify-content: center;
-      padding: 1rem;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: var(--white);
-      border-radius: 18px;
-      padding: 2rem;
-      max-width: 400px; width: 100%;
-      text-align: center;
-    }
-    .modal-icon { font-size: 2.8rem; margin-bottom: 0.8rem; }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--gp); }
-    .modal-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
-    .modal-teams { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
-    .modal-chip { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 20px; padding: 5px 13px; font-size: 13px; color: var(--gp); }
-    .modal-cost { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; padding: 12px; background: var(--surface); border-radius: 9px; line-height: 1.75; }
-    .modal-cost strong { color: var(--text); }
-    .modal-btns { display: flex; gap: 10px; }
-    .modal-cancel { flex: 1; padding: 13px; border: 1px solid var(--border-mid); border-radius: 9px; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-muted); }
-    .modal-cancel:hover { background: var(--surface); }
-    .modal-confirm { flex: 1; padding: 13px; border: none; background: var(--gp); color: #fff; border-radius: 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; }
-    .modal-confirm:hover { background: var(--gl); }
-    .modal-confirm:disabled { background: #aaa; cursor: default; }
-    #submitStatus { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; min-height: 18px; }
-
-    .success-msg {
-      display: none;
-      background: var(--gp); color: #fff;
-      border-radius: 12px; padding: 1.6rem;
-      text-align: center; margin-top: 1rem;
-    }
-    .success-msg.show { display: block; }
-    .success-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); margin-bottom: 0.4rem; font-size: 1.3rem; }
-    .success-msg p { font-size: 14px; color: rgba(255,255,255,0.85); }
-
-    /* LEADERBOARD */
-    .pot-bar {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 1.3rem 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .pot-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-    .pot-amount { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--gp); }
-    .pot-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
-    .prize-split { display: flex; gap: 8px; margin-top: 1rem; }
-    .prize-item { flex: 1; background: var(--surface); border-radius: 9px; padding: 11px; text-align: center; }
-    .prize-medal { font-size: 1.3rem; margin-bottom: 5px; }
-    .prize-amt { font-weight: 500; color: var(--gp); font-size: 15px; }
-    .prize-lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
-    .lb-legend { display: flex; gap: 14px; margin-bottom: 12px; font-size: 12px; color: var(--text-muted); align-items: center; flex-wrap: wrap; }
-    .paid-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
-    .paid-badge.yes { background: #e3f2fd; color: #0a3d6b; border: 1px solid #90caf9; }
-    .paid-badge.no  { background: #fff8e1; color: #856404; border: 1px solid #f0d060; }
-
-    .lb-header {
-      display: grid;
-      grid-template-columns: 38px 1fr 85px 55px;
-      gap: 8px;
-      padding: 8px 15px;
-      font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 6px;
-    }
-    .lb-row {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      display: grid;
-      grid-template-columns: 38px 1fr 85px 55px;
-      gap: 8px;
-      padding: 13px 15px;
-      margin-bottom: 8px;
-      align-items: center;
-      transition: border-color 0.15s;
-    }
-    .lb-row.top1 { border-color: #ff7c20; background: #fffdf5; }
-    .lb-row.top2 { border-color: #b0b0b0; }
-    .lb-row.top3 { border-color: #b08050; background: #fdf8f2; }
-    .lb-row.unpaid { opacity: 0.72; }
-    .rank { font-weight: 700; font-size: 16px; text-align: center; color: var(--text-muted); }
-    .rank.r1 { color: #ff7c20; }
-    .rank.r2 { color: #888; }
-    .rank.r3 { color: #a06030; }
-    .player-name { font-weight: 500; font-size: 14px; }
-    .player-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .pts { font-weight: 700; font-size: 17px; color: var(--gp); text-align: right; }
-    .pts-label { font-size: 10px; color: var(--text-muted); text-align: right; }
-
-    .status-bar { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 10px 14px; border-radius: 9px; margin-bottom: 1rem; flex-wrap: wrap; }
-    .status-bar.loading { background: var(--surface); color: var(--text-muted); }
-    .status-bar.error   { background: #fff3cd; color: #856404; }
-    .status-bar.ok      { background: #e3f2fd; color: #0a3d6b; }
-    .spin { display: inline-block; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .refresh-btn {
-      display: block; margin: 0.5rem auto 1rem;
-      background: none; border: 1px solid var(--border-mid);
-      border-radius: 7px; padding: 6px 14px;
-      font-size: 13px; cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text-muted);
-    }
-    .refresh-btn:hover { background: var(--surface); }
-
-    @media (max-width: 500px) {
-      .lb-header, .lb-row { grid-template-columns: 32px 1fr 70px 44px; }
-      .prize-split { flex-wrap: wrap; }
-      .prize-item { min-width: calc(33% - 6px); }
-    }
-  </style>
-</head>
-<body>
-
-
-<!-- FLAG TICKER -->
-<div style="background:#093560;padding:12px 0;overflow:hidden;position:relative;width:100%;">
-  <div style="position:absolute;top:0;bottom:0;left:0;width:48px;background:linear-gradient(to right,#093560,transparent);z-index:2;pointer-events:none;"></div>
-  <div style="position:absolute;top:0;bottom:0;right:0;width:48px;background:linear-gradient(to left,#093560,transparent);z-index:2;pointer-events:none;"></div>
-  <div id="flagTrack" style="display:flex;gap:22px;width:max-content;animation:flagScroll 35s linear infinite;">
-  </div>
-</div>
-<style>
-  @keyframes flagScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-  #flagTrack:hover { animation-play-state:paused; }
-  .fi { display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0; }
-  .fi span:first-child { font-size:1.7rem;line-height:1; }
-  .fi span:last-child  { font-size:10px;color:rgba(255,255,255,0.6);white-space:nowrap;font-family:'DM Sans',sans-serif; }
-</style>
-<script>
-(function(){
-  var FLAGS=[
-    {f:'🇦🇷',n:'Argentina'},{f:'🇧🇷',n:'Brazil'},{f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'England'},{f:'🇫🇷',n:'France'},{f:'🇪🇸',n:'Spain'},
-    {f:'🇩🇪',n:'Germany'},{f:'🇵🇹',n:'Portugal'},{f:'🇳🇱',n:'Netherlands'},{f:'🇧🇪',n:'Belgium'},
-    {f:'🇨🇴',n:'Colombia'},{f:'🇳🇴',n:'Norway'},{f:'🇯🇵',n:'Japan'},{f:'🇲🇽',n:'Mexico'},
-    {f:'🇲🇦',n:'Morocco'},{f:'🇨🇭',n:'Switzerland'},{f:'🇺🇾',n:'Uruguay'},{f:'🇺🇸',n:'USA'},
-    {f:'🇦🇹',n:'Austria'},{f:'🇨🇦',n:'Canada'},{f:'🇭🇷',n:'Croatia'},{f:'🇪🇨',n:'Ecuador'},
-    {f:'🇵🇾',n:'Paraguay'},{f:'🇸🇳',n:'Senegal'},{f:'🇸🇪',n:'Sweden'},{f:'🇹🇷',n:'Turkey'},
-    {f:'🇩🇿',n:'Algeria'},{f:'🇦🇺',n:'Australia'},{f:'🇧🇦',n:'Bosnia'},{f:'🇨🇿',n:'Czech Republic'},
-    {f:'🇪🇬',n:'Egypt'},{f:'🇬🇭',n:'Ghana'},{f:'🇮🇷',n:'Iran'},{f:'🇨🇮',n:'Ivory Coast'},
-    {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'Scotland'},{f:'🇰🇷',n:'South Korea'},{f:'🇹🇳',n:'Tunisia'},
-    {f:'🇨🇻',n:'Cape Verde'},{f:'🇨🇼',n:'Curaçao'},{f:'🇨🇩',n:'DR Congo'},{f:'🇭🇹',n:'Haiti'},
-    {f:'🇮🇶',n:'Iraq'},{f:'🇯🇴',n:'Jordan'},{f:'🇳🇿',n:'New Zealand'},{f:'🇵🇦',n:'Panama'},
-    {f:'🇶🇦',n:'Qatar'},{f:'🇸🇦',n:'Saudi Arabia'},{f:'🇿🇦',n:'South Africa'},{f:'🇺🇿',n:'Uzbekistan'}
-  ];
-  var track=document.getElementById('flagTrack');
-  var doubled=[].concat(FLAGS,FLAGS);
-  track.innerHTML=doubled.map(function(t){
-    return '<div class="fi"><span>'+t.f+'</span><span>'+t.n+'</span></div>';
-  }).join('');
-})();
-</script>
-
-<div class="hero">
-  <div class="hero-badge">CCABA World Cup Pool</div>
-  <h1>Pick Your Teams,<br><span>Win Big</span></h1>
-  <p class="hero-sub">Pick 5 teams. 100 points to spend. One champion.</p>
-  <div class="split-pill">
-    <div class="wedding"><i class="ti ti-coin"></i> $10 Entry Fee</div>
-    <div class="prize"><i class="ti ti-trophy"></i> 100% Prize Pot</div>
-  </div>
-</div>
-
-<!-- STATS BAR -->
-<div id="statsBar" style="background:#fff;border-bottom:1px solid rgba(0,0,0,0.1);padding:14px 1.5rem;">
-  <div style="max-width:780px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;align-items:center;">
-    <div style="text-align:center;">
-      <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Deadline</div>
-      <div id="countdown" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#0a3d6b;line-height:1.2;">—</div>
-      <div style="font-size:10px;color:#888;margin-top:2px;">Jun 11 · 1:00pm CST</div>
-    </div>
-    <div style="text-align:center;border-left:1px solid rgba(0,0,0,0.08);border-right:1px solid rgba(0,0,0,0.08);padding:0 8px;">
-      <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Entries</div>
-      <div id="statEntries" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0a3d6b;">—</div>
-      <div style="font-size:10px;color:#888;margin-top:2px;" id="statPaid">— confirmed paid</div>
-    </div>
-    <div style="text-align:center;border-right:1px solid rgba(0,0,0,0.08);padding:0 8px;">
-      <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Total pot</div>
-      <div id="statTotal" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0a3d6b;">—</div>
-      <div style="font-size:10px;color:#888;margin-top:2px;">100% to prize pot</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Prize pool</div>
-      <div id="statPrize" style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#ff7c20;">—</div>
-      <div style="font-size:10px;color:#888;margin-top:2px;line-height:1.4;">60% / 30% / 10% split</div>
-    </div>
-  </div>
-</div>
-
-
-
-<nav>
-  <button class="nav-btn active" onclick="showSection('rules')"><i class="ti ti-file-text"></i> Rules</button>
-  <button class="nav-btn" onclick="showSection('pick')"><i class="ti ti-shirt"></i> Pick Teams</button>
-  <button class="nav-btn" onclick="showSection('leaderboard')"><i class="ti ti-trophy"></i> Leaderboard</button>
-</nav>
-<!-- RULES -->
-<div id="rules" class="section active">
-  <h2 class="section-title">How it works</h2>
-  <div class="money-box">
-    <h3>The prize pot</h3>
-    <div class="money-split">
-      <div class="money-item"><div class="money-pct">$10</div><div class="money-label">Flat entry fee per person</div></div>
-      <div class="money-item"><div class="money-pct">100%</div><div class="money-label">Goes straight into the prize pot</div></div>
-    </div>
-  </div>
-  <div class="rule-card"><div class="rule-num">1</div><div><div class="rule-title">Build your team budget</div><div class="rule-text">Each team has a point value based on strength. You get 100 points to spend across your 5 teams — you can't load up on all the favourites!</div></div></div>
-  <div class="rule-card"><div class="rule-num">2</div><div><div class="rule-title">Pick exactly 5 teams</div><div class="rule-text">Choose 5 national teams across any tiers, as long as the total doesn't exceed 100 points. You earn match points every time your teams win or advance.</div></div></div>
-  <div class="rule-card"><div class="rule-num">3</div><div><div class="rule-title">Multiple entries welcome</div><div class="rule-text">Want to enter more than once? Go for it — each entry is a separate $10 fee. A unique team name is required for each entry so we can tell them apart on the leaderboard.</div></div></div>
-  <div class="rule-card"><div class="rule-num">4</div><div><div class="rule-title">Earn points as the tournament progresses</div><div class="rule-text">Points are awarded for every group stage match your teams win (+3) or draw (+1), and for every knockout round they advance through. The further they go, the more points — with big bonuses for semi-finals, finals, and the champion.</div></div></div>
-  <div style="background:#fff;border:1px solid rgba(0,0,0,0.12);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1rem;">
-    <div class="rule-title" style="margin-bottom:0.4rem;">Points per stage (per team)</div>
-    <div class="points-grid">
-      <div class="points-item"><div class="points-num">1</div><div class="points-label">Group stage draw (per match)</div></div>
-      <div class="points-item"><div class="points-num">3</div><div class="points-label">Group stage win (per match)</div></div>
-      <div class="points-item"><div class="points-num">5</div><div class="points-label">Round of 32</div></div>
-      <div class="points-item"><div class="points-num">8</div><div class="points-label">Round of 16</div></div>
-      <div class="points-item"><div class="points-num">13</div><div class="points-label">Quarter-final</div></div>
-      <div class="points-item"><div class="points-num">20</div><div class="points-label">Semi-final</div></div>
-      <div class="points-item"><div class="points-num">35</div><div class="points-label">Champion</div></div>
-    </div>
-  </div>
-  <div class="rule-card"><div class="rule-num">5</div><div><div class="rule-title">Prize split</div><div class="rule-text">Top 3 entries split the full prize pot: 1st gets 60%, 2nd gets 30%, 3rd gets 10%. Only confirmed paid entries are eligible.</div></div></div>
-  <div class="rule-card"><div class="rule-num">6</div><div><div class="rule-title">Ties &amp; deadline</div><div class="rule-text">In a tie, the earlier submission wins. All picks and payments must be in before tournament kick-off — no changes after the deadline.</div></div></div>
-  <button class="submit-btn" onclick="showSection('pick')">Make my picks →</button>
-</div>
-
-<!-- PICK TEAMS -->
-<div id="pick" class="section">
-  <h2 class="section-title">Pick your 5 teams</h2>
-
-  <div class="reg-section">
-    <div class="reg-title"><i class="ti ti-user" style="font-size:16px;color:#0a3d6b;"></i> Your details</div>
-    <div class="multi-note">
-      <i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px;margin-right:4px;"></i>
-      <strong>Want to enter multiple times?</strong> You're welcome to submit more than one entry — each is a separate $10 fee. If entering more than once, a unique team name is required for each submission so we can identify your entries on the leaderboard.
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">First name</label>
-        <input type="text" id="firstName" placeholder="e.g. Jamie" oninput="validateForm()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Last name</label>
-        <input type="text" id="lastName" placeholder="e.g. Rodriguez" oninput="validateForm()">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Email <span class="admin-tag">admin only — never shown publicly</span></label>
-        <input type="email" id="emailInput" placeholder="e.g. jamie@email.com" oninput="validateForm()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Team name <span style="font-size:11px;color:#666;font-weight:400;">(optional for single entry)</span></label>
-        <input type="text" id="teamName" placeholder="e.g. Viva Las Vegas FC" oninput="validateForm()">
-      </div>
-    </div>
-  </div>
-
-  <div class="budget-bar-wrap">
-    <div class="budget-top">
-      <div style="flex:1;">
-        <div class="summary-counter">Teams selected: <span id="selCount">0</span> / 5</div>
-        <div class="chips" id="selChips"><span style="font-size:12px;color:#666;font-style:italic;">No teams selected yet</span></div>
-      </div>
-      <div class="cost-box">
-        <div class="cost-label">Points used</div>
-        <div class="cost-amt" id="totalCost">0 pts</div>
-        <div class="cost-sub" id="budgetRemain">100pts remaining</div>
-      </div>
-    </div>
-    <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
-    <div class="bar-labels"><span>0pts</span><span>100pt cap</span></div>
-    <div class="over-msg" id="overMsg"><i class="ti ti-alert-triangle" style="font-size:13px;vertical-align:-1px;margin-right:4px;"></i>Over 100 points — remove a team to stay within budget.</div>
-  </div>
-
-  <div id="tierContainer"></div>
-
-  <button class="submit-btn" id="submitBtn" disabled onclick="openModal()">Review &amp; submit my picks</button>
-  <div class="success-msg" id="successMsg">
-    <h3>You're in!</h3>
-    <p>Your picks have been saved. For another entry, refresh the page. Here's to the beautiful game — may the best team win!</p>
-  </div>
-</div>
-
-<!-- LEADERBOARD -->
-<div id="leaderboard" class="section">
-  <h2 class="section-title">Leaderboard</h2>
-  <div id="lbStatus" class="status-bar loading"><i class="ti ti-loader spin"></i> Loading live data...</div>
-  <div class="pot-bar">
-    <div class="pot-label">Current prize pot (100% of confirmed paid entries)</div>
-    <div class="pot-amount" id="potAmt">—</div>
-    <div class="pot-sub" id="potSub">Loading...</div>
-    <div class="prize-split">
-      <div class="prize-item"><div class="prize-medal">🥇</div><div class="prize-amt" id="p1">—</div><div class="prize-lbl">1st place (60%)</div></div>
-      <div class="prize-item"><div class="prize-medal">🥈</div><div class="prize-amt" id="p2">—</div><div class="prize-lbl">2nd place (30%)</div></div>
-      <div class="prize-item"><div class="prize-medal">🥉</div><div class="prize-amt" id="p3">—</div><div class="prize-lbl">3rd place (10%)</div></div>
-    </div>
-  </div>
-  <div class="lb-legend">
-    <span><span class="paid-badge yes">Paid</span> Payment confirmed</span>
-    <span><span class="paid-badge no">Pending</span> Awaiting payment</span>
-  </div>
-  <div class="lb-header"><div>#</div><div>Player</div><div style="text-align:center">Status</div><div style="text-align:right">Pts</div></div>
-  <div id="lbRows"><div style="padding:1rem;text-align:center;color:#666;font-size:14px;">Loading entries...</div></div>
-  <button class="refresh-btn" onclick="loadLeaderboard()"><i class="ti ti-refresh"></i> Refresh</button>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal">
-  <div class="modal-box">
-    <div class="modal-icon">⚽</div>
-    <div class="modal-title">Confirm your picks</div>
-    <div class="modal-sub">Once submitted, no changes can be made!</div>
-    <div class="modal-teams" id="modalTeams"></div>
-    <div class="modal-cost" id="modalCost"></div>
-    <div id="submitStatus"></div>
-    <div class="modal-btns">
-      <button class="modal-cancel" id="cancelBtn" onclick="closeModal()">Go back</button>
-      <button class="modal-confirm" id="confirmBtn" onclick="confirmPicks()">Confirm &amp; submit</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const API = "https://script.google.com/macros/s/AKfycbzXL8m0GzPp3GV9z6oLq3Hco2JN7zDPBdO18Tuf97Q0d3FMpr0y6JN6YYqo3YUfD94q/exec";
-  const CAP = 100;
-
-  const TIERS = [
-    {cost:40, label:'40pt tier', cls:'t8', teams:[{name:'Argentina',flag:'🇦🇷'},{name:'Brazil',flag:'🇧🇷'},{name:'England',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'France',flag:'🇫🇷'},{name:'Spain',flag:'🇪🇸'}]},
-    {cost:30, label:'30pt tier', cls:'t6', teams:[{name:'Germany',flag:'🇩🇪'},{name:'Portugal',flag:'🇵🇹'}]},
-    {cost:20, label:'20pt tier', cls:'t4', teams:[{name:'Netherlands',flag:'🇳🇱'},{name:'Belgium',flag:'🇧🇪'},{name:'Colombia',flag:'🇨🇴'},{name:'Norway',flag:'🇳🇴'}]},
-    {cost:15, label:'15pt tier', cls:'t3', teams:[{name:'Japan',flag:'🇯🇵'},{name:'Mexico',flag:'🇲🇽'},{name:'Morocco',flag:'🇲🇦'},{name:'Switzerland',flag:'🇨🇭'},{name:'Uruguay',flag:'🇺🇾'},{name:'USA',flag:'🇺🇸'}]},
-    {cost:10, label:'10pt tier', cls:'t2', teams:[{name:'Austria',flag:'🇦🇹'},{name:'Canada',flag:'🇨🇦'},{name:'Croatia',flag:'🇭🇷'},{name:'Ecuador',flag:'🇪🇨'},{name:'Paraguay',flag:'🇵🇾'},{name:'Senegal',flag:'🇸🇳'},{name:'Sweden',flag:'🇸🇪'},{name:'Turkey',flag:'🇹🇷'}]},
-    {cost:5, label:'5pt tier', cls:'t1', teams:[{name:'Algeria',flag:'🇩🇿'},{name:'Australia',flag:'🇦🇺'},{name:'Bosnia',flag:'🇧🇦'},{name:'Czech Republic',flag:'🇨🇿'},{name:'Egypt',flag:'🇪🇬'},{name:'Ghana',flag:'🇬🇭'},{name:'Iran',flag:'🇮🇷'},{name:'Ivory Coast',flag:'🇨🇮'},{name:'Scotland',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},{name:'South Korea',flag:'🇰🇷'},{name:'Tunisia',flag:'🇹🇳'}]},
-    {cost:2, label:'2pt tier', cls:'t05', teams:[{name:'Cape Verde',flag:'🇨🇻'},{name:'Curaçao',flag:'🇨🇼'},{name:'DR Congo',flag:'🇨🇩'},{name:'Haiti',flag:'🇭🇹'},{name:'Iraq',flag:'🇮🇶'},{name:'Jordan',flag:'🇯🇴'},{name:'New Zealand',flag:'🇳🇿'},{name:'Panama',flag:'🇵🇦'},{name:'Qatar',flag:'🇶🇦'},{name:'Saudi Arabia',flag:'🇸🇦'},{name:'South Africa',flag:'🇿🇦'},{name:'Uzbekistan',flag:'🇺🇿'}]},
-  ];
-
-  let selected = new Map();
-
-  const FLAG_MAP = {};
-  TIERS.forEach(tier => tier.teams.forEach(t => { FLAG_MAP[t.name] = t.flag; }));
-
-  function showSection(id) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    ['rules','pick','leaderboard'].forEach((s,i) => { if(s===id) document.querySelectorAll('.nav-btn')[i].classList.add('active'); });
-    if (id === 'leaderboard') loadLeaderboard();
-    window.scrollTo({top: 0, behavior: 'smooth'});
+  if (action === "submit") {
+    return submitEntry(e.parameter, e.parameter.callback);
+  }
+  if (action === "leaderboard") {
+    return getLeaderboard(e.parameter.callback);
+  }
+  if (action === "updatePoints") {
+    const updateData = {
+      stage: e.parameter.stage,
+      teams: JSON.parse(e.parameter.teams || "[]"),
+      undo: e.parameter.undo === "true"
+    };
+    return updatePoints(updateData, e.parameter.callback);
   }
 
-  function getTotal() { return [...selected.values()].reduce((s,v) => s+v.cost, 0); }
+  return makeResponse({ error: "Unknown action" });
+}
 
-  function buildTiers() {
-    document.getElementById('tierContainer').innerHTML = TIERS.map(tier => `
-      <div class="tier-section">
-        <div class="tier-header ${tier.cls}">
-          <span class="tier-label">${tier.label}</span>
-          <span class="tier-count">${tier.teams.length} team${tier.teams.length>1?'s':''}</span>
-        </div>
-        <div class="tier-body">
-          ${tier.teams.map(t => `
-            <button class="team-btn" id="btn-${t.name.replace(/[\s'çü]/g,'_')}"
-              onclick="toggleTeam('${t.name.replace(/'/g,"\\'")}',${tier.cost},'${t.flag}')">
-              <span class="team-flag">${t.flag}</span>
-              <span>${t.name}</span>
-              <span class="team-cost">${tier.cost}pts</span>
-            </button>`).join('')}
-        </div>
-      </div>`).join('');
-  }
-
-  function toggleTeam(name, cost, flag) {
-    if (selected.has(name)) { selected.delete(name); }
-    else {
-      if (selected.size >= 5) return;
-      if (getTotal() + cost > CAP) return;
-      selected.set(name, {cost, flag});
+function doPost(e) {
+  try {
+    let data;
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      return makeResponse({ success: false, error: "No data received." });
     }
-    updateSummary(); refreshButtons(); validateForm();
+
+    if (data.action === "updatePoints") {
+      return updatePoints(data);
+    }
+
+    return processSubmission(data, callback);
+  } catch (err) {
+    return makeResponse({ success: false, error: err.message });
+  }
+}
+
+function submitEntry(params, callback) {
+  try {
+    const data = {
+      firstName: params.firstName || "",
+      lastName:  params.lastName  || "",
+      email:     params.email     || "",
+      teamName:  params.teamName  || "",
+      teams:     JSON.parse(params.teams || "[]"),
+      entryFee:  parseFloat(params.entryFee) || 10
+    };
+    return processSubmission(data, callback);
+  } catch(err) {
+    return makeResponse({ success: false, error: err.message });
+  }
+}
+
+function processSubmission(data, callback) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const existing = sheet.getDataRange().getValues();
+  const emailRows = existing.filter(r => r[3] === data.email);
+
+  if (emailRows.length > 0 && !data.teamName) {
+    return makeResponse({ success: false, error: "A team name is required for multiple entries." }, callback);
   }
 
-  function updateSummary() {
-    const total = getTotal();
-    const over = total > CAP;
-    const pct = Math.min((total/CAP)*100, 100);
-    document.getElementById('selCount').textContent = selected.size;
-    document.getElementById('totalCost').textContent = ''+total.toFixed(0)+' pts';
-    document.getElementById('totalCost').className = 'cost-amt'+(over?' over':'');
-    document.getElementById('budgetRemain').textContent = over
-      ? '+'+(total-CAP).toFixed(0)+' pts over budget'
-      : '+'+(CAP-total).toFixed(0)+' pts remaining';
-    document.getElementById('barFill').style.width = pct+'%';
-    document.getElementById('barFill').className = 'bar-fill'+(over?' over':'');
-    document.getElementById('overMsg').className = 'over-msg'+(over?' show':'');
-    const chips = document.getElementById('selChips');
-    if (!selected.size) { chips.innerHTML='<span style="font-size:12px;color:#666;font-style:italic;">No teams selected yet</span>'; return; }
-    chips.innerHTML = [...selected.entries()].map(([n,v]) =>
-      `<span class="chip">${v.flag} ${n} <span style="opacity:.7">${v.cost}pts</span></span>`).join('');
-  }
+  sheet.appendRow([
+    new Date().toISOString(),
+    data.firstName,
+    data.lastName,
+    data.email,
+    data.teamName || "",
+    data.teams[0] || "",
+    data.teams[1] || "",
+    data.teams[2] || "",
+    data.teams[3] || "",
+    data.teams[4] || "",
+    data.entryFee || 5,
+    0,
+    ""
+  ]);
 
-  function refreshButtons() {
-    const total = getTotal(); const full = selected.size >= 5;
-    TIERS.forEach(tier => tier.teams.forEach(t => {
-      const btn = document.getElementById('btn-'+t.name.replace(/[\s'çü]/g,'_'));
-      if (!btn) return;
-      const isSel = selected.has(t.name);
-      btn.classList.toggle('selected', isSel);
-      const wouldExceed = !isSel && (total+tier.cost > CAP);
-      btn.classList.toggle('would-exceed', !isSel && wouldExceed);
-      btn.disabled = (full && !isSel) || (!isSel && wouldExceed);
-    }));
-  }
+  return makeResponse({ success: true }, callback);
+}
 
-  function validateForm() {
-    const fn = document.getElementById('firstName').value.trim();
-    const ln = document.getElementById('lastName').value.trim();
-    const em = document.getElementById('emailInput').value.trim();
-    document.getElementById('submitBtn').disabled =
-      !(fn && ln && em && /\S+@\S+\.\S+/.test(em) && selected.size===5 && getTotal()<=CAP);
-  }
+function updatePoints(data, callback) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const rows = sheet.getDataRange().getValues();
+    const pointsPerStage = POINTS[data.stage] || 0;
+    const multiplier = data.undo ? -1 : 1;
+    const winningTeams = data.teams || [];
+    let updatedCount = 0;
 
-  function openModal() {
-    const fn = document.getElementById('firstName').value.trim();
-    const ln = document.getElementById('lastName').value.trim();
-    const tn = document.getElementById('teamName').value.trim();
-    const total = getTotal();
-    document.getElementById('modalTeams').innerHTML = [...selected.entries()].map(([n,v]) =>
-      `<span class="modal-chip">${v.flag} ${n}</span>`).join('');
-    document.getElementById('modalCost').innerHTML =
-      `Playing as: <strong>${fn} ${ln}${tn?' · '+tn:''}</strong><br>`+
-      `Points used: <strong>$${total.toFixed(2)}</strong> — 100% goes to the prize pot 🏆<br>`+
-      `<span style="font-size:12px;color:#666;">Want another entry? Submit this one first, then come back and fill out the form again.</span><br><br><span style="font-size:13px;font-weight:500;color:#0a3d6b;">How to pay:</span><br><span style="font-size:12px;color:#666;line-height:1.8;">Venmo: <strong style="color:#1a1a1a;">@ansan7</strong><br>Cash App: <strong style="color:#1a1a1a;">$tonisanchez7</strong><br>Other forms of payment accepted — just ask!</span><br><br><span style="font-size:13px;font-weight:500;color:#0a3d6b;">How to pay:</span><br><span style="font-size:12px;color:#666;line-height:1.8;">Pay $10 to enter — payment details will be shared separately.</span>`;
-    document.getElementById('submitStatus').textContent = '';
-    document.getElementById('confirmBtn').disabled = false;
-    document.getElementById('modal').classList.add('open');
-  }
-
-  function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-  function callAPI(params) {
-    return new Promise((resolve, reject) => {
-      const cbName = 'cb_' + Date.now();
-      const url = API + '?' + Object.keys(params).map(k =>
-        encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
-      ).join('&') + '&callback=' + cbName;
-
-      const script = document.createElement('script');
-      const timeout = setTimeout(() => {
-        cleanup();
-        reject(new Error('Request timed out'));
-      }, 10000);
-
-      function cleanup() {
-        clearTimeout(timeout);
-        delete window[cbName];
-        if (script.parentNode) script.parentNode.removeChild(script);
+    for (let i = 1; i < rows.length; i++) {
+      const playerTeams = [rows[i][5], rows[i][6], rows[i][7], rows[i][8], rows[i][9]].filter(Boolean);
+      let pointsToAdd = 0;
+      playerTeams.forEach(function(t) {
+        if (winningTeams.indexOf(t) !== -1) pointsToAdd += pointsPerStage;
+      });
+      if (pointsToAdd > 0) {
+        const currentPoints = parseInt(rows[i][11]) || 0;
+        const newPoints = Math.max(0, currentPoints + (pointsToAdd * multiplier));
+        sheet.getRange(i + 1, 12).setValue(newPoints);
+        updatedCount++;
       }
+    }
 
-      window[cbName] = function(data) {
-        cleanup();
-        resolve(data);
-      };
+    return makeResponse({ success: true, updated: updatedCount, pointsPerTeam: pointsPerStage }, callback);
+  } catch (err) {
+    return makeResponse({ success: false, error: err.message }, callback);
+  }
+}
 
-      script.src = url;
-      script.onerror = () => { cleanup(); reject(new Error('Network error')); };
-      document.head.appendChild(script);
+function getLeaderboard(callback) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+
+  if (data.length <= 1) {
+    return makeResponse({ entries: [], totalPaid: 0 }, callback);
+  }
+
+  const entries = [];
+  let totalPaid = 0;
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const teams = [row[5], row[6], row[7], row[8], row[9]].filter(Boolean);
+    const fee = parseFloat(row[10]) || 0;
+    totalPaid += fee;
+
+    entries.push({
+      firstName: row[1],
+      lastName:  row[2],
+      teamName:  row[4],
+      teams:     teams,
+      entryFee:  fee,
+      points:    parseInt(row[11]) || 0,
+      paid:      (row[12] || "").toString().toUpperCase() === "YES"
     });
   }
 
-  async function confirmPicks() {
-    const btn = document.getElementById('confirmBtn');
-    const status = document.getElementById('submitStatus');
-    btn.disabled = true; btn.textContent = 'Submitting...';
-    status.textContent = 'Saving your picks...';
-    document.getElementById('cancelBtn').disabled = true;
-    const payload = {
-      firstName: document.getElementById('firstName').value.trim(),
-      lastName:  document.getElementById('lastName').value.trim(),
-      email:     document.getElementById('emailInput').value.trim(),
-      teamName:  document.getElementById('teamName').value.trim(),
-      teams:     [...selected.keys()],
-      entryFee:  10
-    };
-    try {
-      const params = {
-        action: 'submit',
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        email: payload.email,
-        teamName: payload.teamName,
-        teams: JSON.stringify(payload.teams),
-        entryFee: payload.entryFee
-      };
-      const result = await callAPI(params);
-      if (result.success) {
-        closeModal();
-        document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('successMsg').classList.add('show');
-      } else {
-        throw new Error(result.error || 'Unknown error');
-      }
-    } catch(err) {
-      status.textContent = 'Something went wrong: '+err.message+'. Please try again.';
-      btn.disabled = false; btn.textContent = 'Confirm & submit';
-      document.getElementById('cancelBtn').disabled = false;
-    }
+  entries.sort((a, b) => b.points - a.points);
+  return makeResponse({ entries: entries, totalPaid: totalPaid }, callback);
+}
+
+function makeResponse(data, callback) {
+  if (callback) {
+    return ContentService
+      .createTextOutput(callback + '(' + JSON.stringify(data) + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
-
-  async function loadLeaderboard() {
-    const statusEl = document.getElementById('lbStatus');
-    const rowsEl = document.getElementById('lbRows');
-    statusEl.className = 'status-bar loading';
-    statusEl.innerHTML = '<i class="ti ti-loader spin"></i> Loading live data...';
-    rowsEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#666;font-size:14px;">Fetching entries...</div>';
-    try {
-      const data = await callAPI({action:'leaderboard'});
-      const entries = data.entries || [];
-      const paidEntries = entries.filter(e => e.paid);
-      const paidTotal = paidEntries.reduce((s,e) => s+(parseFloat(e.entryFee)||0), 0);
-      const prize = paidTotal;
-      document.getElementById('potAmt').textContent = '$'+prize.toFixed(2);
-      document.getElementById('potSub').textContent =
-        entries.length+' entries ('+paidEntries.length+' paid) · $'+paidTotal.toFixed(2)+' confirmed — 100% goes to winners';
-      document.getElementById('p1').textContent = '$'+(prize*0.6).toFixed(2);
-      document.getElementById('p2').textContent = '$'+(prize*0.3).toFixed(2);
-      document.getElementById('p3').textContent = '$'+(prize*0.1).toFixed(2);
-      const sorted = entries.sort((a,b) => b.points-a.points);
-      if (!sorted.length) {
-        rowsEl.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#666;font-size:14px;">No entries yet — be the first!</div>';
-        statusEl.className = 'status-bar ok';
-        statusEl.innerHTML = '<i class="ti ti-check"></i> Live data loaded';
-        return;
-      }
-      const rc=['top1','top2','top3'], rl=['r1','r2','r3'], med=['🥇','🥈','🥉'];
-      rowsEl.innerHTML = sorted.map((p,i) => `
-        <div class="lb-row ${rc[i]||''} ${p.paid?'':'unpaid'}">
-          <div class="rank ${rl[i]||''}">${i<3?med[i]:i+1}</div>
-          <div>
-            <div class="player-name">${p.firstName} ${p.lastName.charAt(0)}.</div>
-            <div class="player-sub">${p.teamName?p.teamName+' · ':''}${(p.teams||[]).map(t=>FLAG_MAP[t]||t).join(' ')}</div>
-          </div>
-          <div style="text-align:center"><span class="paid-badge ${p.paid?'yes':'no'}">${p.paid?'Paid':'Pending'}</span></div>
-          <div><div class="pts">${p.points}</div><div class="pts-label">pts</div></div>
-        </div>`).join('');
-      statusEl.className = 'status-bar ok';
-      statusEl.innerHTML = '<i class="ti ti-check"></i> Live data · last refreshed '+new Date().toLocaleTimeString();
-    } catch(err) {
-      statusEl.className = 'status-bar error';
-      statusEl.innerHTML = '<i class="ti ti-alert-triangle"></i> Could not load data. <button class="refresh-btn" onclick="loadLeaderboard()">Retry</button>';
-      rowsEl.innerHTML = '';
-    }
-  }
-
-
-  // STATS BAR
-  const DEADLINE = new Date('2026-06-11T13:00:00-06:00'); // 1:00pm CST (UTC-6)
-
-  function updateCountdown() {
-    const now = new Date();
-    const diff = DEADLINE - now;
-    const el = document.getElementById('countdown');
-    if (diff <= 0) {
-      el.textContent = 'Closed';
-      el.style.color = '#c0392b';
-      return;
-    }
-    const days = Math.floor(diff / (1000*60*60*24));
-    const hrs  = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-    const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
-    const secs = Math.floor((diff % (1000*60)) / 1000);
-    if (days > 0) {
-      el.innerHTML = days+'d '+hrs+'h '+mins+'m<br><span style="font-size:.85rem;">'+secs+'s</span>';
-    } else {
-      el.innerHTML = hrs+'h '+mins+'m '+secs+'s';
-    }
-  }
-
-  async function loadStats() {
-    try {
-      const data = await callAPI({action:'leaderboard'});
-      const entries = data.entries || [];
-      const paidEntries = entries.filter(e => e.paid);
-      const paidTotal = paidEntries.reduce((s,e) => s+(parseFloat(e.entryFee)||0), 0);
-      const allTotal = entries.reduce((s,e) => s+(parseFloat(e.entryFee)||0), 0);
-      const prize = paidTotal;
-      document.getElementById('statEntries').textContent = entries.length;
-      document.getElementById('statPaid').textContent = paidEntries.length+' confirmed paid';
-      document.getElementById('statTotal').textContent = '$'+allTotal.toFixed(2);
-      document.getElementById('statPrize').textContent = '$'+prize.toFixed(2);
-    } catch(e) {
-      // silently fail - stats bar is bonus info
-    }
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-  loadStats();
-  setInterval(loadStats, 60000); // refresh stats every minute
-
-  buildTiers();
-</script>
-</body>
-</html>
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
